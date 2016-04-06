@@ -1,0 +1,86 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Reflection;
+using System.Runtime;
+using System.Windows.Forms;
+using System.Drawing;
+using Microsoft.Office.Interop;
+using Excel = Microsoft.Office.Interop.Excel;
+
+using System.Diagnostics;
+using Autodesk.Revit.ApplicationServices;
+using Autodesk.Revit.Attributes;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+using Autodesk.Revit.UI.Selection;
+
+namespace ExcelTest
+{
+    [Transaction(TransactionMode.Automatic)]
+    [Regeneration(RegenerationOption.Manual)]
+    [Journaling(JournalingMode.NoCommandData)]
+    public class Command : IExternalCommand
+    {
+        Document Doc;
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            UIApplication uiApp = commandData.Application;
+            UIDocument Uidoc = uiApp.ActiveUIDocument;
+            Doc = Uidoc.Document;
+            FormCreation();
+            
+           return Result.Succeeded;
+        }
+
+        public static void FormCreation()
+        {
+            System.Windows.Forms.Form Frm = new System.Windows.Forms.Form();
+            Frm.Text = "Excel Form test";
+            Frm.Height = 180;
+            Frm.Width = 280;
+            Frm.MinimumSize = new System.Drawing.Size(Frm.Width, Frm.Height);
+
+            System.Windows.Forms.TextBox Tb = new System.Windows.Forms.TextBox();
+            Tb.TextAlign = HorizontalAlignment.Left;
+            Tb.Height = 20;
+            Tb.Width = 180;
+            Tb.Location = new System.Drawing.Point(40, 20);
+
+            Button Exp = new Button();
+            Exp.Text = "Export ";
+            Exp.Click += new EventHandler(Exp_Click);
+            Exp.Height = 23;
+            Exp.Width = 50;
+            Exp.Location = new System.Drawing.Point(100, 80);
+
+            Frm.Controls.Add(Exp);
+            Frm.Controls.Add(Tb);
+            Frm.ShowDialog();
+        }
+
+        static void Exp_Click(object sender, EventArgs e)
+        {
+            OpenFile();
+        }
+
+
+
+        public static void OpenFile()
+        {
+            string mySheet = @"C:\Users\atceg000384\Documents\Book1.xlsx";
+            var excelApp = new Excel.Application();
+            excelApp.Visible = true;
+            Excel.Workbooks workbooks = excelApp.Workbooks;
+            Excel.Workbook sheet = workbooks.Open(mySheet);
+            Excel.Worksheet worksheet = sheet.ActiveSheet;
+            worksheet.Cells[1, 1] = "hello world";
+            
+        }
+    }
+}
+
+
+                                
