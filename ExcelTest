@@ -24,61 +24,66 @@ namespace ExcelTest
     [Journaling(JournalingMode.NoCommandData)]
     public class Command : IExternalCommand
     {
-        Document Doc;
+        
+       // Document Doc;
+       
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             UIApplication uiApp = commandData.Application;
             UIDocument Uidoc = uiApp.ActiveUIDocument;
-            Doc = Uidoc.Document;
-            FormCreation();
-            
-           return Result.Succeeded;
-        }
+            Document Doc = Uidoc.Document;
 
-        public static void FormCreation()
-        {
-            System.Windows.Forms.Form Frm = new System.Windows.Forms.Form();
-            Frm.Text = "Excel Form test";
-            Frm.Height = 180;
-            Frm.Width = 280;
-            Frm.MinimumSize = new System.Drawing.Size(Frm.Width, Frm.Height);
+            Reference r = Uidoc.Selection.PickObject(ObjectType.Element);
+            Element El = Uidoc.Document.GetElement(r);
 
-            System.Windows.Forms.TextBox Tb = new System.Windows.Forms.TextBox();
-            Tb.TextAlign = HorizontalAlignment.Left;
-            Tb.Height = 20;
-            Tb.Width = 180;
-            Tb.Location = new System.Drawing.Point(40, 20);
-
-            Button Exp = new Button();
-            Exp.Text = "Export ";
-            Exp.Click += new EventHandler(Exp_Click);
-            Exp.Height = 23;
-            Exp.Width = 50;
-            Exp.Location = new System.Drawing.Point(100, 80);
-
-            Frm.Controls.Add(Exp);
-            Frm.Controls.Add(Tb);
-            Frm.ShowDialog();
-        }
-
-        static void Exp_Click(object sender, EventArgs e)
-        {
-            OpenFile();
-        }
-
-
-
-        public static void OpenFile()
-        {
             string mySheet = @"C:\Users\atceg000384\Documents\Book1.xlsx";
             var excelApp = new Excel.Application();
             excelApp.Visible = true;
             Excel.Workbooks workbooks = excelApp.Workbooks;
             Excel.Workbook sheet = workbooks.Open(mySheet);
             Excel.Worksheet worksheet = sheet.ActiveSheet;
-            worksheet.Cells[1, 1] = "hello world";
+
+            worksheet.Cells[1, 1] = "ID";
+            worksheet.Cells[1, 2] = El.Id.IntegerValue.ToString();
+            worksheet.Cells[2, 1] = "Category Name";
+            worksheet.Cells[2, 2] = El.Category.Name;
+            worksheet.Cells[3, 1] = "Name";
+            worksheet.Cells[3, 2] = El.Name;
             
+
+            
+            
+           return Result.Succeeded;
         }
+
+
+        public static void OpenFile()
+        {
+            //string mySheet = @"C:\Users\atceg000384\Documents\Book1.xlsx";
+            //var excelApp = new Excel.Application();
+            //excelApp.Visible = true;
+            //Excel.Workbooks workbooks = excelApp.Workbooks;
+            //Excel.Workbook sheet = workbooks.Open(mySheet);
+            //Excel.Worksheet worksheet = sheet.ActiveSheet;
+            //CallingExcel CExl = new CallingExcel();
+            
+              
+        }
+
+        public static void ShowParameter(Element el)
+        {
+            ElementId elemTypeId = el.GetTypeId();
+
+            //elemType.Category.Name
+        }
+
+    }
+    public class CallingExcel
+    {
+        public static Excel.Workbooks workbooks;
+        public static Excel.Workbook sheet;
+        public static Excel.Worksheet worksheet = sheet.ActiveSheet;
+
     }
 }
 
