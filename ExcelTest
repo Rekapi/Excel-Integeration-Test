@@ -1,0 +1,91 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Reflection;
+using System.Runtime;
+using System.Windows.Forms;
+using System.Drawing;
+using Microsoft.Office.Interop;
+using Excel = Microsoft.Office.Interop.Excel;
+
+using System.Diagnostics;
+using Autodesk.Revit.ApplicationServices;
+using Autodesk.Revit.Attributes;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+using Autodesk.Revit.UI.Selection;
+
+namespace ExcelTest
+{
+    [Transaction(TransactionMode.Automatic)]
+    [Regeneration(RegenerationOption.Manual)]
+    [Journaling(JournalingMode.NoCommandData)]
+    public class Command : IExternalCommand
+    {
+        
+       // Document Doc;
+       
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            UIApplication uiApp = commandData.Application;
+            UIDocument Uidoc = uiApp.ActiveUIDocument;
+            Document Doc = Uidoc.Document;
+
+            Reference r = Uidoc.Selection.PickObject(ObjectType.Element);
+            Element El = Uidoc.Document.GetElement(r);
+
+            string mySheet = @"C:\Users\atceg000384\Documents\Book1.xlsx";
+            var excelApp = new Excel.Application();
+            excelApp.Visible = true;
+            Excel.Workbooks workbooks = excelApp.Workbooks;
+            Excel.Workbook sheet = workbooks.Open(mySheet);
+            Excel.Worksheet worksheet = sheet.ActiveSheet;
+
+            worksheet.Cells[1, 1] = "ID";
+            worksheet.Cells[1, 2] = El.Id.IntegerValue.ToString();
+            worksheet.Cells[2, 1] = "Category Name";
+            worksheet.Cells[2, 2] = El.Category.Name;
+            worksheet.Cells[3, 1] = "Name";
+            worksheet.Cells[3, 2] = El.Name;
+            
+
+            
+            
+           return Result.Succeeded;
+        }
+
+
+        public static void OpenFile()
+        {
+            //string mySheet = @"C:\Users\atceg000384\Documents\Book1.xlsx";
+            //var excelApp = new Excel.Application();
+            //excelApp.Visible = true;
+            //Excel.Workbooks workbooks = excelApp.Workbooks;
+            //Excel.Workbook sheet = workbooks.Open(mySheet);
+            //Excel.Worksheet worksheet = sheet.ActiveSheet;
+            //CallingExcel CExl = new CallingExcel();
+            
+              
+        }
+
+        public static void ShowParameter(Element el)
+        {
+            ElementId elemTypeId = el.GetTypeId();
+
+            //elemType.Category.Name
+        }
+
+    }
+    public class CallingExcel
+    {
+        public static Excel.Workbooks workbooks;
+        public static Excel.Workbook sheet;
+        public static Excel.Worksheet worksheet = sheet.ActiveSheet;
+
+    }
+}
+
+
+                                
